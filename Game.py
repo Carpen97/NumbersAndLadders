@@ -67,7 +67,7 @@ class Game:
         lines = []
         #lines.append("              SCOREBOARD                       ")
         #lines.append("_______________________________________________")
-        lines.append("| RANK | SCORE |    PLAYER    | CUBES | LADDERS")
+        lines.append("| RANK | SCORE |    PLAYER    |        STRATEGY        | CUBES | LADDERS")
         for rank, player in enumerate(sorted(game.players)):
             lines.append(f'|{str(rank+1).center(6)}|{str(player.score).center(7)}{player}')
         return lines

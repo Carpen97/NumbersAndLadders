@@ -45,6 +45,10 @@ class LadderBuilderStrategy(Strategy):
 class CollectorStrategy(Strategy):
     def make_choice(self, game: Game, player: Player):
         num = game.num
+        #Always take numbers adjacent to current numbers
+        for n in player.numbers:
+            if num == n+1 or num == n-1:
+                return "t"
         cutoff = self.params.get("cutoff", (game.lowest_number + game.highest_number) // 2)
         if num < cutoff:
             return "t"
@@ -75,3 +79,46 @@ class RiskThresholdStrategy(Strategy):
             return "t"
         return "p"
 
+class ClusterLoverStrategy(Strategy):
+    def make_choice(self, game: Game, player: Player):
+        num = game.num
+        if not player.numbers:
+            return "p"
+        center = sum(player.numbers) / len(player.numbers)
+        if abs(center - num) < self.params.get("cluster_radius", 3):
+            return "t"
+        return "p"
+
+class ChainBuilderStrategy(Strategy):
+    def make_choice(self, game: Game, player: Player):
+        num = game.num
+        chains = sorted(player.numbers)
+        for i in range(1, len(chains)):
+            if chains[i] == chains[i-1] + 1 and (num == chains[i] + 1 or num == chains[i-1] - 1):
+                return "t"
+        return "p"
+
+class PileSnatcherStrategy(Strategy):
+    def make_choice(self, game: Game, player: Player):
+        pile_size = game.pile
+        snatch_threshold = self.params.get("snatch_threshold", 3)
+        if pile_size >= snatch_threshold:
+            return "t"
+        return "p"
+
+class CubeConserverStrategy(Strategy):
+    def make_choice(self, game: Game, player: Player):
+        if player.cubes <= self.params.get("low_cube_threshold", 2):
+            return "p"
+        if game.pile >= self.params.get("pile_threshold", 2):
+            return "t"
+        return "p"
+
+class GreedyLadderExtensionStrategy(Strategy):
+    def make_choice(self, game: Game, player: Player):
+        num = game.num
+        if num in [n + 1 for n in player.numbers] or num in [n - 1 for n in player.numbers]:
+            return "t"
+        if game.pile >= self.params.get("high_pile_threshold", 4):
+            return "t"
+        return "p"

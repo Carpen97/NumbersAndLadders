@@ -90,7 +90,7 @@ class Player:
         return color_text(self.color, f'[{str(number).rjust(2)}]')
 
     def __str__(self):
-        return f"|{self.get_name('center',14)}|{format_pile(self.cubes).center(7)}| {self.get_numbers_formatted_as_ladders()}"
+        return f"|{self.get_name('center',14)}|{self.strategy.name.center(24)}|{format_pile(self.cubes).center(7)}| {self.get_numbers_formatted_as_ladders()}"
 
     def __lt__(self, other):
         return self.score > other.score

@@ -1,6 +1,21 @@
 import argparse
 from Game import * 
 from Strategy import *
+
+# === Add your custom strategies here ===
+ALL_STRATEGIES = [
+    Simlple,
+    LadderBuilderStrategy,
+    CollectorStrategy,
+    RiskThresholdStrategy,
+    ChaoticStrategy,
+    CubeConserverStrategy,
+    PileSnatcherStrategy,
+    ChainBuilderStrategy,
+    ClusterLoverStrategy,
+    GreedyLadderExtensionStrategy
+]
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Play Numbers & Ladders",
@@ -46,21 +61,19 @@ if __name__ == "__main__":
 
     players = []
     human_names = set(args.humans)
-    total_players = max(len(human_names), args.players)  # or another logic you prefer
+    total_players = max(len(human_names), args.players)
 
     for i in range(total_players):
-        name = f"Player {i+1}"
-        if i < len(args.humans):
-            name = args.humans[i]
+        name = args.humans[i] if i < len(args.humans) else f"Player {i+1}"
         is_human = name in human_names
 
-        strategy = random.choice([
-            LadderBuilderStrategy(**(load_best_params(LadderBuilderStrategy))),
-            LadderBuilderStrategy(**(load_best_params(LadderBuilderStrategy))),
-            LadderBuilderStrategy(**(load_best_params(LadderBuilderStrategy))),
-        ])
-        players.append(Player.Player(name, played_by_human=is_human, strategy=strategy))
+        # Choose strategy randomly
+        #strategy_cls = random.choice(ALL_STRATEGIES)
+        strategy_cls = CollectorStrategy
+        params = load_best_params(strategy_cls)
+        strategy = strategy_cls(**params)
+
+        players.append(Player.Player(name=name, played_by_human=is_human, strategy=strategy))
 
     game = Game.Game(players, args.cubes, args.min, args.max, args.remove)
-    game.play(in_terminal= not args.silent)
-
+    game.play(in_terminal=not args.silent)
